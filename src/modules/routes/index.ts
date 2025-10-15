@@ -15,7 +15,7 @@ const moduleRoutes = [
     route: BlogRouter,
   },
   {
-    path: "/auth",
+    path: "/project",
     route: ProjectRouter,
   },
 ];
