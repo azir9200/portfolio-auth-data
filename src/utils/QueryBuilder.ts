@@ -1,75 +1,80 @@
-// import { Query } from "mongoose";
-// import { excludeField } from "../constants";
+import { Prisma } from "@prisma/client";
 
-// export class QueryBuilder<T> {
-//   public modelQuery: Query<T[], T>;
-//   public readonly query: Record<string, string>;
+export class PrismaQueryBuilder<T> {
+  private readonly query: Record<string, string>;
+  private prismaQuery: Prisma.BlogFindManyArgs; // change "Project" to your model name
 
-//   constructor(modelQuery: Query<T[], T>, query: Record<string, string>) {
-//     this.modelQuery = modelQuery;
-//     this.query = query;
-//   }
+  constructor(query: Record<string, string>) {
+    this.query = query;
+    this.prismaQuery = {};
+  }
 
-//   filter(): this {
-//     const filter = { ...this.query };
+  filter(): this {
+    const { searchTerm, sort, fields, page, limit, ...filters } = this.query;
 
-//     for (const field of excludeField) {
-//       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-//       delete filter[field];
-//     }
+    if (Object.keys(filters).length > 0) {
+      this.prismaQuery.where = Object.entries(filters).reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: { equals: value },
+        }),
+        {}
+      );
+    }
 
-//     this.modelQuery = this.modelQuery.find(filter); // Tour.find().find(filter)
+    return this;
+  }
 
-//     return this;
-//   }
+  search(searchableFields: string[]): this {
+    const searchTerm = this.query.searchTerm;
+    if (searchTerm) {
+      this.prismaQuery.where = {
+        ...this.prismaQuery.where,
+        OR: searchableFields.map((field) => ({
+          [field]: {
+            contains: searchTerm,
+            mode: "insensitive",
+          },
+        })),
+      };
+    }
+    return this;
+  }
 
-//   search(searchableField: string[]): this {
-//     const searchTerm = this.query.searchTerm || "";
-//     const searchQuery = {
-//       $or: searchableField.map((field) => ({
-//         [field]: { $regex: searchTerm, $options: "i" },
-//       })),
-//     };
-//     this.modelQuery = this.modelQuery.find(searchQuery);
-//     return this;
-//   }
+  sort(): this {
+    const sortParam = this.query.sort || "createdAt";
+    const order = sortParam.startsWith("-") ? "desc" : "asc";
+    const field = sortParam.replace("-", "");
 
-//   sort(): this {
-//     const sort = this.query.sort || "-createdAt";
+    this.prismaQuery.orderBy = {
+      [field]: order,
+    };
 
-//     this.modelQuery = this.modelQuery.sort(sort);
+    return this;
+  }
 
-//     return this;
-//   }
-//   fields(): this {
-//     const fields = this.query.fields?.split(",").join(" ") || "";
+  paginate(): this {
+    const page = Number(this.query.page) || 1;
+    const limit = Number(this.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-//     this.modelQuery = this.modelQuery.select(fields);
+    this.prismaQuery.skip = skip;
+    this.prismaQuery.take = limit;
 
-//     return this;
-//   }
-//   paginate(): this {
-//     const page = Number(this.query.page) || 1;
-//     const limit = Number(this.query.limit) || 10;
-//     const skip = (page - 1) * limit;
+    return this;
+  }
 
-//     this.modelQuery = this.modelQuery.skip(skip).limit(limit);
+  fields(): this {
+    const fields = this.query.fields?.split(",").reduce((acc, field) => {
+      acc[field] = true;
+      return acc;
+    }, {} as Record<string, boolean>);
 
-//     return this;
-//   }
+    if (fields) this.prismaQuery.select = fields;
+    return this;
+  }
 
-//   build() {
-//     return this.modelQuery;
-//   }
-
-//   async getMeta() {
-//     const totalDocuments = await this.modelQuery.model.countDocuments();
-
-//     const page = Number(this.query.page) || 1;
-//     const limit = Number(this.query.limit) || 10;
-
-//     const totalPage = Math.ceil(totalDocuments / limit);
-
-//     return { page, limit, total: totalDocuments, totalPage };
-//   }
-// }
+  build(): Prisma.BlogFindManyArgs {
+    return this.prismaQuery;
+  }
+}

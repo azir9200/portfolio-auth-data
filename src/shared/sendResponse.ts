@@ -1,18 +1,25 @@
 import { Response } from "express";
 
-interface TResponse<T> {
-  statusCode: number;
-  success: boolean;
-  message: string;
-  data: T;
+interface IResponseMeta {
+  page: number;
+  limit: number;
+  total: number;
 }
 
-export const sendResponse = <T>(res: Response, data: TResponse<T>) => {
-  res.status(data.statusCode).json({
-    statusCode: data.statusCode,
-    success: data.success,
-    message: data.message,
-
-    data: data.data,
+export const sendResponse = <T>(
+  res: Response,
+  jsonData: {
+    statusCode: number;
+    success: boolean;
+    message: string;
+    data: T | null | undefined;
+    meta?: IResponseMeta;
+  }
+) => {
+  res.status(jsonData.statusCode).json({
+    success: jsonData.success,
+    message: jsonData.message,
+    meta: jsonData.meta || null || undefined,
+    data: jsonData.data || null || undefined,
   });
 };

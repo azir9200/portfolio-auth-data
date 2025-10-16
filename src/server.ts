@@ -1,8 +1,8 @@
 import http, { Server } from "http";
 import app from "./app";
 import dotenv from "dotenv";
-import { prisma } from "./app/config/db";
-import seedSuperAdmin from "./app/utils/seedSuperAdmin";
+import { prisma } from "./config/db";
+import seedSuperAdmin from "./utils/seedSuperAdmin";
 
 dotenv.config();
 
