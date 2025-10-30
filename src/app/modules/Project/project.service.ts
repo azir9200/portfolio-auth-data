@@ -2,11 +2,17 @@ import { Prisma, Project } from "@prisma/client";
 import { prisma } from "../../../config/db";
 
 const createProject = async (
-  payload: Prisma.ProjectCreateInput
+  payload: Prisma.ProjectUncheckedCreateInput,
+  ownerId: string
 ): Promise<Project> => {
+  console.log(payload, "this is payload");
   const result = await prisma.project.create({
-    data: payload,
+    data: {
+      ...payload,
+      ownerId, 
+    },
   });
+  console.log(result);
   return result;
 };
 

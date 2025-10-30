@@ -1,12 +1,14 @@
+import { Request, Response } from "express";
+import httpStatus from "http-status";
 import { catchAsync } from "../../../shared/catchAsync";
 import { sendResponse } from "../../../shared/sendResponse";
 import { BlogService } from "./blog.service";
-import { Request, Response } from "express";
-import httpStatus from "http-status";
 
 const createBlog = async (req: Request, res: Response) => {
   try {
-    const result = await BlogService.createBlog(req.body);
+    const ownerId = req.owner.id;
+
+    const result = await BlogService.createBlog(req.body, ownerId);
 
     res.status(201).json(result);
   } catch (error) {
@@ -40,6 +42,8 @@ const getBlogById = catchAsync(async (req: Request, res: Response) => {
 
 const updateBlog = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
+
+  console.log(id, req.body);
   const result = await BlogService.updateBlog(id, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,

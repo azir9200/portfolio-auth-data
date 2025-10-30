@@ -5,13 +5,6 @@ import { verifyToken } from "../../utils/jwt";
 import { prisma } from "../../config/db";
 import httpStatus from "http-status";
 
-// import { envVars } from "../config/env";
-// import AppError from "../errorHelpers/AppError";
-// import { verifyToken } from "../utils/jwt";
-// import { User } from "../modules/user/user.model";
-// import httpStatus from "http-status-codes";
-// import { IsActive } from "../modules/user/user.interface";
-
 export const checkAuth =
   (...authRoles: string[]) =>
   async (req: Request, res: Response, next: NextFunction) => {

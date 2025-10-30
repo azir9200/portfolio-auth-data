@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
-import { ProjectService } from "./project.service";
+import httpStatus from "http-status";
 import { catchAsync } from "../../../shared/catchAsync";
 import { sendResponse } from "../../../shared/sendResponse";
-import httpStatus from "http-status";
+import { ProjectService } from "./project.service";
 
 const createProject = async (req: Request, res: Response) => {
   try {
-    const result = await ProjectService.createProject(req.body);
+    const ownerId = req.owner.id;
+    const result = await ProjectService.createProject(req.body, ownerId);
     res.status(201).json(result);
   } catch (error) {
     res.status(500).send(error);

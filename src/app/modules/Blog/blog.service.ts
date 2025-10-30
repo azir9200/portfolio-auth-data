@@ -1,11 +1,22 @@
 import { Blog, Prisma } from "@prisma/client";
 import { prisma } from "../../../config/db";
-import { catchAsync } from "../../../shared/catchAsync";
 import { PrismaQueryBuilder } from "../../../utils/QueryBuilder";
 
-const createBlog = async (payload: Prisma.BlogCreateInput): Promise<Blog> => {
+const createBlog = async (
+  payload: Prisma.BlogCreateInput,
+  authorId: string
+) => {
   const result = await prisma.blog.create({
-    data: payload,
+    data: {
+      title: payload.title,
+      slug: payload.slug,
+      content: payload.content,
+      thumbnail: payload.thumbnail,
+      tags: payload.tags,
+      author: {
+        connect: { id: authorId }, // 🔗 connect user
+      },
+    },
   });
   return result;
 };

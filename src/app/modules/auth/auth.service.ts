@@ -4,7 +4,9 @@ import jwt from "jsonwebtoken";
 import { prisma } from "../../../config/db";
 import { ILoginUser, ILoginUserResponse } from "./auth.interface";
 
-const loginWithEmailAndPassword = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
+const loginWithEmailAndPassword = async (
+  payload: ILoginUser
+): Promise<ILoginUserResponse> => {
   const { email, password } = payload;
 
   const existingUser = await prisma.user.findUnique({
@@ -71,8 +73,14 @@ const authWithGoogle = async (data: Prisma.UserCreateInput) => {
 
   return user;
 };
-
+const getMe = async (id: string) => {
+  let user = await prisma.user.findUnique({
+    where: { id: id },
+  });
+  return user;
+};
 export const AuthService = {
   loginWithEmailAndPassword,
   authWithGoogle,
+  getMe,
 };

@@ -11,8 +11,9 @@ import globalErrorHandler from "./app/middlewares/globalErrorHandle";
 dotenv.config();
 // Configure CORS dynamically
 const allowedOrigins = process.env.CORS_ORIGINS?.split(",") || [
-  "http://localhost:3000",
+  "https://portfolio-project-weld-three.vercel.app",
 ];
+//   "http://localhost:3000",
 
 const app: Application = express();
 
