@@ -8,10 +8,12 @@ const loginWithEmailAndPassword = async (
   payload: ILoginUser
 ): Promise<ILoginUserResponse> => {
   const { email, password } = payload;
+  console.log("res auth", payload);
 
   const existingUser = await prisma.user.findUnique({
     where: { email },
   });
+  console.log("auth service", existingUser);
 
   if (!existingUser) {
     throw new Error("user not found");

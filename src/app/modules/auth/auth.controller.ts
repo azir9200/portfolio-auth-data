@@ -4,7 +4,9 @@ import { IRefreshTokenResponse } from "./auth.interface";
 import { AuthService } from "./auth.service";
 
 const loginWithEmailAndPassword = async (req: Request, res: Response) => {
+  console.log("object", req.body);
   const result = await AuthService.loginWithEmailAndPassword(req.body);
+  console.log("auth controller", result);
   sendResponse<IRefreshTokenResponse>(res, {
     statusCode: 200,
     success: true,

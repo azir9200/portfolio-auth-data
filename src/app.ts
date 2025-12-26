@@ -6,51 +6,28 @@ import { router } from "./app/routes";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./app/middlewares/globalErrorHandle";
-
-// Load environment variables
-dotenv.config();
-// Configure CORS dynamically
-const allowedOrigins = process.env.CORS_ORIGINS?.split(",") || [
-  "https://portfolio-project-weld-three.vercel.app",
-];
-//   "http://localhost:3000",
+import { sendResponse } from "./shared/sendResponse";
+import notFound from "./app/middlewares/notFound";
 
 const app: Application = express();
-
-app.use(cors());
-app.use(compression());
 app.use(express.json());
-
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://portfolio-project-kappa-cyan.vercel.app",
-    ],
-    credentials: true,
-  })
-);
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
+app.get("/", (req: Request, res: Response) => {
+  res.send({ message: "Hey developer, Your code is running well!" });
+});
 
 app.use("/api/v1", router);
-
-// Default route for testing
-app.get("/", (_req, res) => {
-  res.send("API is running");
-});
-
-// Handle 404 errors before the global error handler
-app.use((req: Request, res: Response, next: NextFunction) => {
-  next({
-    status: httpStatus.NOT_FOUND,
-    message: "API Not Found!",
-    error: {
-      path: req.originalUrl,
-      message: "Your requested path is not found!",
-    },
+// ✅ Error handler
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  sendResponse(res, {
+    statusCode: 500,
+    success: false,
+    message: error.message || "Something went wrong!",
+    data: error,
   });
 });
-// Global error handler
+
 app.use(globalErrorHandler);
+
+app.use(notFound);
+
 export default app;
