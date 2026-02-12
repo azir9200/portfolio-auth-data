@@ -8,6 +8,6 @@ router.post("/", checkAuth("OWNER"), BlogController.createBlog);
 router.get("/", BlogController.getAllBlog);
 router.get("/:id", BlogController.getBlogById);
 router.patch("blogs/:id", checkAuth("OWNER"), BlogController.updateBlog);
-router.delete("/:id", checkAuth("OWNER"), BlogController.deleteBlog);
+router.patch("/:id", checkAuth("OWNER"), BlogController.deleteBlog);
 
 export const BlogRouter = router;

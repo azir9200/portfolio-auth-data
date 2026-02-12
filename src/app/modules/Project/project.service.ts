@@ -3,13 +3,13 @@ import { prisma } from "../../../config/db";
 
 const createProject = async (
   payload: Prisma.ProjectUncheckedCreateInput,
-  ownerId: string
+  ownerId: string,
 ): Promise<Project> => {
   console.log(payload, "this is payload");
   const result = await prisma.project.create({
     data: {
       ...payload,
-      ownerId, 
+      ownerId,
     },
   });
   console.log(result);
@@ -19,7 +19,7 @@ const createProject = async (
 const getAllProject = async () => {
   const result = await prisma.project.findMany({
     include: { owner: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "asc" },
   });
 
   return { data: result };
@@ -36,7 +36,7 @@ const getProjectById = async (id: string): Promise<Project | null> => {
 
 const updateProject = async (
   id: string,
-  payload: Partial<Project>
+  payload: Partial<Project>,
 ): Promise<Project | null> => {
   const result = await prisma.project.update({
     where: { id },
@@ -46,10 +46,17 @@ const updateProject = async (
 };
 
 const deleteProject = async (id: string): Promise<Project | null> => {
-  const data = await prisma.project.delete({
-    where: { id },
+  const result = await prisma.project.update({
+    where: {
+      id,
+      isDeleted: false,
+    },
+    data: {
+      isDeleted: true,
+      deletedAt: new Date(),
+    },
   });
-  return data;
+  return result;
 };
 
 export const ProjectService = {

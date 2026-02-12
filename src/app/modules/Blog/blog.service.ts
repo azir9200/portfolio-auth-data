@@ -70,8 +70,15 @@ const updateBlog = async (
 };
 
 const deleteBlog = async (id: string) => {
-  const result = await prisma.blog.delete({
-    where: { id },
+  const result = await prisma.blog.updateMany({
+    where: {
+      id,
+      isDeleted: false,
+    },
+    data: {
+      isDeleted: true,
+      deletedAt: new Date(),
+    },
   });
   return result;
 };

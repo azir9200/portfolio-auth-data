@@ -41,6 +41,8 @@ model Blog {
   tags        String[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+    isDeleted   Boolean  @default(false)
+   deletedAt   DateTime?
 
   // Relation
   authorId    String
@@ -61,6 +63,9 @@ model Project {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   ownerId       String
+   deletedAt   DateTime?
+     isDeleted   Boolean  @default(false)
+ 
   owner         User      @relation(fields: [ownerId], references: [id])
 }
 
@@ -78,6 +83,8 @@ model About {
   skills      Skill[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+   deletedAt   DateTime?
+
 }
 
 

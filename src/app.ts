@@ -1,10 +1,8 @@
-import compression from "compression";
-import cors from "cors";
+
 import express, { Application, NextFunction, Request, Response } from "express";
-import httpStatus from "http-status";
+
 import { router } from "./app/routes";
-import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
+
 import globalErrorHandler from "./app/middlewares/globalErrorHandle";
 import { sendResponse } from "./shared/sendResponse";
 import notFound from "./app/middlewares/notFound";
